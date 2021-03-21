@@ -4,10 +4,12 @@ namespace SDL_GUI {
 
 	UIMenu::UIMenu(SDL_Renderer* renderer, std::string name, int x, int y, size_t w, size_t h, 
 				   std::string fontName, size_t fontSize,
-				   HorizontalAlign hTextAlign, VerticalAlign vTextAlign, VerticalAlign vAlign,
+				   HorizontalAlign hAlign, VerticalAlign vAlign,
 				   SDL_Color bgColor, SDL_Color fgColor, SDL_Color selBGColor, SDL_Color selFGColor,
 				   std::shared_ptr<UIMenu> parent, std::function<bool(std::string)> callback) :
-			UIPanel(renderer, name, x, y, w, h, true, true, fontName, fontSize, hTextAlign, vTextAlign, vAlign, bgColor, fgColor) {
+			UIPanel(renderer, name, x, y, w, h, true, fontName, fontSize, hAlign, vAlign, bgColor, fgColor) {
+		this->hTextAlign = HorizontalAlign::Center;
+		this->vTextAlign = VerticalAlign::Top;
 		this->selBGColor = selBGColor;
 		this->selFGColor = selFGColor;
 		this->parent = parent;
@@ -23,8 +25,9 @@ namespace SDL_GUI {
 
 	std::shared_ptr<UIMenu> UIMenu::CreateSubMenu(std::string name) {
 		return std::make_shared<UIMenu>(renderer, name, rect.x, rect.y, rect.w, rect.y,
-										fontName, fontSize, hTextAlign, vTextAlign, vAlign,
-										bgColor, fgColor, selBGColor, selFGColor, shared_from_this());
+										fontName, fontSize, hAlign, vAlign,
+										bgColor, fgColor, selBGColor, selFGColor, shared_from_this(), this->callback);
+
 	}
 
 	void UIMenu::HandleEvents() {
@@ -48,6 +51,7 @@ namespace SDL_GUI {
 						break;
 					case SDLK_ESCAPE:
 						callback("esc");
+						break;
 					default:
 						break;
 				}

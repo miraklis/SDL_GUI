@@ -39,57 +39,61 @@ void initSDL() {
 bool menuCommand(string cmd) {
     if(cmd=="esc")
         running = false;
-    if(cmd == "alLeft") {
-        panel->AlignTextHorizontal(SDL_GUI::HorizontalAlign::Left);
-    }
-    if(cmd == "alCenter") {
-        panel->AlignTextHorizontal(SDL_GUI::HorizontalAlign::Center);
-    }
-    if(cmd == "alRight") {
-        panel->AlignTextHorizontal(SDL_GUI::HorizontalAlign::Right);
-    }
-    if(cmd == "alTop")
-        panel->AlignItems(SDL_GUI::VerticalAlign::Top);
-    if(cmd == "alMiddle")
-        panel->AlignItems(SDL_GUI::VerticalAlign::Middle);
-    if(cmd == "alBottom")
-        panel->AlignItems(SDL_GUI::VerticalAlign::Bottom);
-    if(cmd == "pnLBL1") {
+    if(cmd == "panelHorizontalAlign") {
         static int cnt = 0;
-        if(cnt % 2 == 0) {
-            (*panel)[0]->SetText("11");
-            (*panel)[1]->SetText("222222");
-            (*panel)[2]->SetText("3333");
-        } else {
-            (*panel)[0]->SetText("11111");
-            (*panel)[1]->SetText("222");
-            (*panel)[2]->SetText("3333333333");
-        }
-        cnt++;
-    }
-    if(cmd == "pnLBL2") {
-        static int cnt = 0;
-        if(cnt % 2 == 0) {
-            (*panel)[0]->SetWidth(50);
-            (*panel)[1]->SetWidth(50);
-            (*panel)[2]->SetWidth(50);
-        } else {
-            (*panel)[0]->SetWidth(300);
-            (*panel)[1]->SetWidth(300);
-            (*panel)[2]->SetWidth(300);
-        }
-        cnt++;
-    }
-    if(cmd == "pnLBL3") {
-        (*panel)[0]->SetFont("ka1.ttf", 32);
-        (*panel)[1]->SetFont("ka1.ttf", 32);
-        (*panel)[2]->SetFont("ka1.ttf", 32);
-    }
-    if(cmd == "pnLBL4") {
-        if(panel->IsVisible())
-            panel->Hide();
+        if(cnt % 3 == 0)
+            panel->AlignHorizontal(SDL_GUI::HorizontalAlign::Left);
+        else if(cnt % 3 == 1)
+            panel->AlignHorizontal(SDL_GUI::HorizontalAlign::Center);
         else
-            panel->Show();
+            panel->AlignHorizontal(SDL_GUI::HorizontalAlign::Right);
+        cnt++;
+    }
+    if(cmd == "panelVerticalAlign") {
+        static int cnt = 0;
+        if(cnt % 3 == 0)
+            panel->AlignVertical(SDL_GUI::VerticalAlign::Top);
+        else if(cnt % 3 == 1)
+            panel->AlignVertical(SDL_GUI::VerticalAlign::Middle);
+        else
+            panel->AlignVertical(SDL_GUI::VerticalAlign::Bottom);
+        cnt++;
+    }
+    if(cmd == "panelTextHorizontalAlign") {
+        static int cnt = 0;
+        if(cnt % 3 == 0)
+            panel->AlignTextHorizontal(SDL_GUI::HorizontalAlign::Left);
+        else if(cnt % 3 == 1)
+            panel->AlignTextHorizontal(SDL_GUI::HorizontalAlign::Center);
+        else
+            panel->AlignTextHorizontal(SDL_GUI::HorizontalAlign::Right);
+        cnt++;
+    }
+    if(cmd == "panelTextVerticalAlign") {
+        static int cnt = 0;
+        if(cnt % 3 == 0)
+            panel->AlignTextVertical(SDL_GUI::VerticalAlign::Top);
+        else if(cnt % 3 == 1)
+            panel->AlignTextVertical(SDL_GUI::VerticalAlign::Middle);
+        else
+            panel->AlignTextVertical(SDL_GUI::VerticalAlign::Bottom);
+        cnt++;
+    }
+    if(cmd == "panelMove") {
+        static int cnt = 0;
+        if(cnt % 2 == 0)
+            panel->SetPos(700, 400);
+        else
+            panel->SetPos(200, 300);
+        cnt++;
+    }
+    if(cmd == "panelChange") {
+        static int cnt = 0;
+        if(cnt % 2 == 0)
+            (*panel)[0]->SetText("abcdefghijklmnopqrstuywxyzabcdefghijklmnopqrseooijenfnv");
+        else
+            (*panel)[0]->SetText("111111");
+        cnt++;
     }
     if(cmd == "lblMove") {
         static int cnt = 0;
@@ -154,7 +158,18 @@ int main()
     SDL_Color fg = { 255, 255, 255, 255 }; // white
     SDL_Color selBG = { 255, 0, 0, 255 }; // red
     SDL_Color selFG = { 255, 255, 255, 255 }; // white
-    menu = make_unique<SDL_GUI::UIMenu>(renderer, "menu", 400, 10, 0, 0, SDL_GUI::sFonts::TTF_TIMES, 16, SDL_GUI::HorizontalAlign::Left, SDL_GUI::VerticalAlign::Middle, SDL_GUI::VerticalAlign::Top, bg, fg, selBG, selFG, nullptr, menuCommand);
+    menu = make_unique<SDL_GUI::UIMenu>(
+        renderer, "menu", 500, 150, 0, 0, 
+        SDL_GUI::sFonts::TTF_TIMES, 16, 
+        SDL_GUI::HorizontalAlign::Center, SDL_GUI::VerticalAlign::Middle,
+        bg, fg, selBG, selFG,
+        nullptr, menuCommand);
+    menu->AddItem("panelHorizontalAlign", "Panel Change Horizontal Align");
+    menu->AddItem("panelVerticalAlign", "Panel Change Vertical Align");
+    menu->AddItem("panelTextHorizontalAlign", "Panel Change Text Horizontal Align");
+    menu->AddItem("panelTextVerticalAlign", "Panel Change Text Vertical Align");
+    menu->AddItem("panelMove", "Panel Move");
+    menu->AddItem("panelChange", "Panel Change Item");
     menu->AddItem("lblMove", "Label Move");
     menu->AddItem("lblSize", "Label Change Size");
     menu->AddItem("lblHorizontalAlign", "Label Change Horizontal Align");
@@ -163,6 +178,15 @@ int main()
     menu->AddItem("lblFont", "Label Change Font");
     menu->Show();
 
+    panel = make_unique<SDL_GUI::UIPanel>(
+        renderer, "menu", 200, 300, 200, 200, false,
+        SDL_GUI::sFonts::TTF_TIMES, 16,
+        SDL_GUI::HorizontalAlign::Center, SDL_GUI::VerticalAlign::Middle,
+        bg, fg);
+    panel->AddItem("Test1", "This is Test");
+    panel->AddItem("Test2", "Testing");
+    panel->AddItem("Test3", "This is a very Long Test");
+    panel->Show();
     lbl = new SDL_GUI::UILabel(renderer, "lbl", "This is a test", SDL_GUI::sFonts::TTF_TIMES, 16, 0, 0, 200, 100, false, 
                                SDL_GUI::HorizontalAlign::Left, SDL_GUI::VerticalAlign::Top, { 0,0,255,255 }, { 255,255,255,255 });
     lbl->Show();
@@ -174,6 +198,7 @@ int main()
         SDL_RenderClear(renderer);
         menu->Render();
         lbl->Render();
+        panel->Render();
         SDL_RenderPresent(renderer);
     }
     if(lbl)

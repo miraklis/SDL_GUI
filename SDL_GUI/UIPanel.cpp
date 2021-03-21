@@ -3,22 +3,21 @@
 namespace SDL_GUI {
 
 	UIPanel::UIPanel(SDL_Renderer* renderer, std::string name,
-					 int x, int y, size_t w, size_t h, bool autosize, bool autofill,
+					 int x, int y, size_t w, size_t h, bool autosize,
 					 std::string fontName, size_t fontSize,
-					 HorizontalAlign hTextAlign, VerticalAlign vTextAlign, VerticalAlign vAlign,
+					 HorizontalAlign hAlign, VerticalAlign vAlign,
 					 SDL_Color bgColor, SDL_Color fgColor) :
 			UIComponent(renderer, name, x, y, w, h, true) {
 		this->bgColor = bgColor;
 		this->fgColor = fgColor;
 		this->autosize = autosize;
-		this->autofill = autofill;
 		this->fontName = fontName;
 		this->fontSize = fontSize;
-		this->hTextAlign = hTextAlign;
-		this->vTextAlign = vTextAlign;
+		this->hAlign = hAlign;
 		this->vAlign = vAlign;
+		this->hTextAlign = HorizontalAlign::Left;
+		this->vTextAlign = VerticalAlign::Top;
 		initPos = rect;
-		UpdatePanel();
 	}
 
 	UIPanel::~UIPanel() {
@@ -59,6 +58,11 @@ namespace SDL_GUI {
 			c->SetPos(p.x + deltaX, p.y + deltaY);
 		}
 		UIComponent::SetPos(x, y);
+		initPos.x = x;
+		initPos.y = y;
+		AlignHorizontal(hAlign);
+		AlignVertical(vAlign);
+		UpdatePanel();
 	}
 
 	void UIPanel::SetSize(size_t w, size_t h) {
@@ -68,14 +72,18 @@ namespace SDL_GUI {
 	}
 
 	void UIPanel::AddItem(std::string name, std::string caption) {
-		std::unique_ptr<UILabel> label = std::make_unique<UILabel>(renderer, name, caption, fontName, fontSize, rect.x, rect.y, rect.w, fontSize, true, hTextAlign, vTextAlign);
+		std::unique_ptr<UILabel> label = std::make_unique<UILabel>(renderer, name, caption, fontName, fontSize, rect.x, rect.y, rect.w, fontSize, true, hAlign, VerticalAlign::Middle);
 		label->OnTextChanged.AddListener(std::bind(&UIPanel::ItemChanged, this, std::placeholders::_1));
-		label->SetAutosize(!autofill);
+		label->SetAutosize(false);
 		label->SetColor(bgColor, fgColor);
 		label->AlignHorizontal(hTextAlign);
 		label->AlignVertical(vTextAlign);
 		label->Show();
 		components.push_back(move(label));
+		AlignTextHorizontal(hTextAlign);
+		AlignTextVertical(vTextAlign);
+		AlignHorizontal(hAlign);
+		AlignVertical(vAlign);
 		UpdatePanel();
 	}
 
@@ -84,35 +92,29 @@ namespace SDL_GUI {
 		UpdatePanel();
 	}
 
-	void UIPanel::ClearItems()
-	{
-		rect = initPos;
+	void UIPanel::ClearItems() {
 		if(components.size() > 0)
 			components.clear();
 	}
 
-	void UIPanel::AlignTextHorizontal(HorizontalAlign hAlign) {
-		this->hTextAlign = hAlign;
+	void UIPanel::AlignTextHorizontal(HorizontalAlign hTextAlign) {
+		this->hTextAlign = hTextAlign;		
 		for(auto& c : components) {
-			c->AlignHorizontal(hAlign);
+			c->AlignHorizontal(hTextAlign);
 		}
 	}
 
-	void UIPanel::AlignTextVertical(VerticalAlign vAlign) {
-		this->vTextAlign = vAlign;
+	void UIPanel::AlignTextVertical(VerticalAlign vTextAlign) {
+		this->vTextAlign = vTextAlign;
 		for(auto& c : components) {
-			c->AlignVertical(vAlign);
+			c->AlignVertical(vTextAlign);
 		}
-	}
-
-	void UIPanel::AlignItems(VerticalAlign vAlign) {
-		this->vAlign = vAlign;
 		size_t totalHeight = 0;
 		for(auto& c : components) {
 			totalHeight += c->GetRect().h;
 		}
 		int cnt = 0;
-		switch(vAlign) {
+		switch(vTextAlign) {
 			case VerticalAlign::Top:
 				for(auto& c : components) {
 					SDL_Rect r = c->GetRect();
@@ -137,10 +139,50 @@ namespace SDL_GUI {
 		}
 	}
 
+	void UIPanel::AlignHorizontal(HorizontalAlign hAlign) {
+		this->hAlign = hAlign;		
+		switch(hAlign) {
+			case HorizontalAlign::Left:
+				rect.x = initPos.x;
+				break;
+			case HorizontalAlign::Center:
+				rect.x = initPos.x - (rect.w / 2);
+				break;
+			case HorizontalAlign::Right:
+				rect.x = initPos.x - rect.w;
+				break;
+		}
+		for(auto& c : components) {
+			c->SetX(rect.x);
+		}
+	}
+
+	void UIPanel::AlignVertical(VerticalAlign vAlign) {
+		this->vAlign = vAlign;
+		int oldY = rect.y;
+		switch(vAlign) {
+			case VerticalAlign::Top:
+				rect.y = initPos.y;
+				break;
+			case VerticalAlign::Middle:
+				rect.y = initPos.y - (rect.h / 2);
+				break;
+			case VerticalAlign::Bottom:
+				rect.y = initPos.y - rect.h;
+				break;
+		}
+		int deltaY = rect.y - oldY;
+		for(auto& c : components) {
+			SDL_Rect p = c->GetRect();
+			c->SetY(p.y + deltaY);
+		}
+	}
+
 	void UIPanel::SetFont(std::string fntName, size_t fntSize) {
 		for(auto& c : components) {
 			c->SetFont(fntName, fntSize);
 		}
+		UpdatePanel();
 	}
 
 	void UIPanel::UpdatePanel() {
@@ -156,11 +198,8 @@ namespace SDL_GUI {
 			rect.w = maxComponentWidth;
 			rect.h = totalComponentHeight;
 		}
-		if(autofill) {
-			for(auto& c : components) {
-				c->SetWidth(rect.w);
-			}
-			AlignItems(vAlign);
+		for(auto& c : components) {
+			c->SetWidth(rect.w);
 		}
 	}
 
