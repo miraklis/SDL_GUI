@@ -72,7 +72,7 @@ namespace SDL_GUI {
 	}
 
 	void UIPanel::AddItem(std::string name, std::string caption) {
-		std::unique_ptr<UILabel> label = std::make_unique<UILabel>(renderer, name, caption, fontName, fontSize, rect.x, rect.y, rect.w, fontSize, true, hAlign, VerticalAlign::Middle);
+		std::unique_ptr<UILabel> label = std::make_unique<UILabel>(renderer, name, caption, fontName, fontSize, rect.x, rect.y, 0, 0, true, hAlign, VerticalAlign::Middle);
 		label->OnTextChanged.AddListener(std::bind(&UIPanel::ItemChanged, this, std::placeholders::_1));
 		label->SetAutosize(false);
 		label->SetColor(bgColor, fgColor);
@@ -192,8 +192,8 @@ namespace SDL_GUI {
 			for(auto& c : components) {
 				SDL_Rect r = c->GetRect();
 				totalComponentHeight += r.h;
-				if(r.w > maxComponentWidth)
-					maxComponentWidth = r.w;
+				if(c->GetTextWidth() > maxComponentWidth)
+					maxComponentWidth = c->GetTextWidth();
 			}
 			rect.w = maxComponentWidth;
 			rect.h = totalComponentHeight;
@@ -205,9 +205,12 @@ namespace SDL_GUI {
 
 	void UIPanel::ItemChanged(UILabel* sender) {
 		UpdatePanel();
+		AlignHorizontal(hAlign);
 	}
 
 	void UIPanel::SizeChanged(UIComponent* sender) {
+		AlignHorizontal(hAlign);
+		AlignVertical(vAlign);
 		UpdatePanel();
 	}
 

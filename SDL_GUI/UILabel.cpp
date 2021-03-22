@@ -94,6 +94,10 @@ namespace SDL_GUI {
 		this->autosize = autosize;
 	}
 
+	int UILabel::GetTextWidth() const {
+		return textRegion.w;
+	}
+
 	void UILabel::Render() {
 		if(!visible)
 			return;
@@ -114,10 +118,15 @@ namespace SDL_GUI {
 	void UILabel::updateText() {
 		if(font == nullptr)
 			return;
-		SDL_Surface* surface = TTF_RenderText_Blended(font, caption.c_str(), fgColor);
-		texture = SDL_CreateTextureFromSurface(renderer, surface);
-		SDL_FreeSurface(surface);
-		SDL_QueryTexture(texture, nullptr, nullptr, &textRegion.w, &textRegion.h);
+		if(!caption.empty()) {
+			SDL_Surface* surface = TTF_RenderText_Blended(font, caption.c_str(), fgColor);
+			texture = SDL_CreateTextureFromSurface(renderer, surface);
+			SDL_FreeSurface(surface);
+			SDL_QueryTexture(texture, nullptr, nullptr, &textRegion.w, &textRegion.h);
+		} else {
+			textRegion.w = 0;
+			textRegion.h = 0;
+		}
 		if(autosize || rect.w == 0) {
 			rect.w = textRegion.w;
 		}

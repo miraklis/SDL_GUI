@@ -92,7 +92,7 @@ bool menuCommand(string cmd) {
         if(cnt % 2 == 0)
             (*panel)[0]->SetText("abcdefghijklmnopqrstuywxyzabcdefghijklmnopqrseooijenfnv");
         else
-            (*panel)[0]->SetText("111111");
+            (*panel)[0]->SetText("");
         cnt++;
     }
     if(cmd == "lblMove") {
@@ -179,7 +179,7 @@ int main()
     menu->Show();
 
     panel = make_unique<SDL_GUI::UIPanel>(
-        renderer, "menu", 200, 300, 200, 200, false,
+        renderer, "menu", 200, 300, 200, 200, true,
         SDL_GUI::sFonts::TTF_TIMES, 16,
         SDL_GUI::HorizontalAlign::Center, SDL_GUI::VerticalAlign::Middle,
         bg, fg);

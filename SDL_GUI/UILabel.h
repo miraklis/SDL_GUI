@@ -21,6 +21,7 @@ namespace SDL_GUI {
 		void AlignVertical(VerticalAlign vAlign);
 		void Align();
 		void SetAutosize(bool autosize);
+		int GetTextWidth() const;
 		Event<UILabel*> OnTextChanged;
 	protected:
 		bool autosize;
