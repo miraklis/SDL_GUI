@@ -24,7 +24,7 @@ namespace SDL_GUI {
 	}
 
 	std::shared_ptr<UIMenu> UIMenu::CreateSubMenu(std::string name) {
-		return std::make_shared<UIMenu>(renderer, name, rect.x, rect.y, rect.w, rect.y,
+		return std::make_shared<UIMenu>(renderer, name, initPos.x, initPos.y, 0, 0,
 										fontName, fontSize, hAlign, vAlign,
 										bgColor, fgColor, selBGColor, selFGColor, shared_from_this(), this->callback);
 
