@@ -12,6 +12,7 @@ bool running{ true };
 unique_ptr<SDL_GUI::UIPanel> panel;
 unique_ptr<SDL_GUI::UIMenu> menu;
 SDL_GUI::UILabel* lbl;
+SDL_GUI::UIInputBox* input;
 
 void initSDL() {
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
@@ -34,6 +35,13 @@ void initSDL() {
     if(TTF_Init() < 0) {
         exit(1);
     }
+}
+
+void inputfinished(bool entered, string s) {
+    if(entered)
+        lbl->SetText(s);
+    else
+        lbl->SetText("ESC");
 }
 
 bool menuCommand(string cmd) {
@@ -158,51 +166,64 @@ int main()
     SDL_Color fg = { 255, 255, 255, 255 }; // white
     SDL_Color selBG = { 255, 0, 0, 255 }; // red
     SDL_Color selFG = { 255, 255, 255, 255 }; // white
-    menu = make_unique<SDL_GUI::UIMenu>(
-        renderer, "menu", 500, 150, 0, 0, 
-        SDL_GUI::sFonts::TTF_TIMES, 16, 
-        SDL_GUI::HorizontalAlign::Center, SDL_GUI::VerticalAlign::Middle,
-        bg, fg, selBG, selFG,
-        nullptr, menuCommand);
-    menu->AddItem("panelHorizontalAlign", "Panel Change Horizontal Align");
-    menu->AddItem("panelVerticalAlign", "Panel Change Vertical Align");
-    menu->AddItem("panelTextHorizontalAlign", "Panel Change Text Horizontal Align");
-    menu->AddItem("panelTextVerticalAlign", "Panel Change Text Vertical Align");
-    menu->AddItem("panelMove", "Panel Move");
-    menu->AddItem("panelChange", "Panel Change Item");
-    menu->AddItem("lblMove", "Label Move");
-    menu->AddItem("lblSize", "Label Change Size");
-    menu->AddItem("lblHorizontalAlign", "Label Change Horizontal Align");
-    menu->AddItem("lblVerticalAlign", "Label Change Vertical Align");
-    menu->AddItem("lblText", "Label Change Text");
-    menu->AddItem("lblFont", "Label Change Font");
-    menu->Show();
+    //menu = make_unique<SDL_GUI::UIMenu>(
+    //    renderer, "menu", 500, 150, 0, 0, 
+    //    SDL_GUI::sFonts::TTF_TIMES, 16, 
+    //    SDL_GUI::HorizontalAlign::Center, SDL_GUI::VerticalAlign::Middle,
+    //    bg, fg, selBG, selFG,
+    //    nullptr, menuCommand);
+    //menu->AddItem("panelHorizontalAlign", "Panel Change Horizontal Align");
+    //menu->AddItem("panelVerticalAlign", "Panel Change Vertical Align");
+    //menu->AddItem("panelTextHorizontalAlign", "Panel Change Text Horizontal Align");
+    //menu->AddItem("panelTextVerticalAlign", "Panel Change Text Vertical Align");
+    //menu->AddItem("panelMove", "Panel Move");
+    //menu->AddItem("panelChange", "Panel Change Item");
+    //menu->AddItem("lblMove", "Label Move");
+    //menu->AddItem("lblSize", "Label Change Size");
+    //menu->AddItem("lblHorizontalAlign", "Label Change Horizontal Align");
+    //menu->AddItem("lblVerticalAlign", "Label Change Vertical Align");
+    //menu->AddItem("lblText", "Label Change Text");
+    //menu->AddItem("lblFont", "Label Change Font");
+    //menu->Show();
 
-    panel = make_unique<SDL_GUI::UIPanel>(
-        renderer, "menu", 200, 300, 200, 200, true,
-        SDL_GUI::sFonts::TTF_TIMES, 16,
-        SDL_GUI::HorizontalAlign::Center, SDL_GUI::VerticalAlign::Middle,
-        bg, fg);
-    panel->AddItem("Test1", "This is Test");
-    panel->AddItem("Test2", "Testing");
-    panel->AddItem("Test3", "This is a very Long Test");
-    panel->Show();
-    lbl = new SDL_GUI::UILabel(renderer, "lbl", "This is a test", SDL_GUI::sFonts::TTF_TIMES, 16, 0, 0, 200, 100, false, 
+    //panel = make_unique<SDL_GUI::UIPanel>(
+    //    renderer, "menu", 200, 300, 200, 200, true,
+    //    SDL_GUI::sFonts::TTF_TIMES, 16,
+    //    SDL_GUI::HorizontalAlign::Center, SDL_GUI::VerticalAlign::Middle,
+    //    bg, fg);
+    //panel->AddItem("Test1", "This is Test");
+    //panel->AddItem("Test2", "Testing");
+    //panel->AddItem("Test3", "This is a very Long Test");
+    //panel->Show();
+    lbl = new SDL_GUI::UILabel(renderer, "lbl", "This is a test", SDL_GUI::sFonts::TTF_TIMES, 16, 10, 200, 200, 100, true, 
                                SDL_GUI::HorizontalAlign::Left, SDL_GUI::VerticalAlign::Top, { 0,0,255,255 }, { 255,255,255,255 });
     lbl->Show();
 
+    SDL_Rect r{ 10,10,300,30 };
+    input = new SDL_GUI::UIInputBox(renderer, "input", r);
+    input->SetColor(bg, fg);
+    input->OnInputFinished.AddListener(inputfinished);
+    input->SetAutosize(true);
+    input->SetFocus(true);
+    input->SetMaxChar(50);
+    input->Show();
+
     //SDL_Event event;
     while(running) {
-        menu->HandleEvents();
+        //menu->HandleEvents();
+        input->HandleInput();
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        menu->Render();
+        //menu->Render();
         lbl->Render();
-        panel->Render();
+        //panel->Render();
+        input->Render();
         SDL_RenderPresent(renderer);
     }
     if(lbl)
         delete lbl;
+    if(input)
+        delete input;
     SDL_Quit();
     return 0;
 }

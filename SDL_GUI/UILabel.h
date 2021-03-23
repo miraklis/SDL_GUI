@@ -35,7 +35,6 @@ namespace SDL_GUI {
 		int txtOffsetY;
 		HorizontalAlign hAlign;
 		VerticalAlign vAlign;
-	private:
 		void updateText();
 	};
 

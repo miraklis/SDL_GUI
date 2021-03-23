@@ -9,11 +9,6 @@ namespace SDL_GUI {
 
 	class UIPanel : public UIComponent {
 	public:
-		//UIPanel(SDL_Renderer* renderer, std::string name,
-		//		int x, int y, size_t w = 0, size_t h = 0, bool autosize = true,
-		//		std::string fontName=sFonts::TTF_TIMES, size_t fontSize = 16,
-		//		HorizontalAlign hAlign = HorizontalAlign::Left, VerticalAlign vAlign = VerticalAlign::Top,
-		//		SDL_Color bgColor = { 0,0,0,0 }, SDL_Color fgColor = { 255,255,255,255 });
 		UIPanel(SDL_Renderer* renderer, std::string name,
 				int x, int y, size_t w, size_t h, bool autosize,
 				std::string fontName, size_t fontSize,

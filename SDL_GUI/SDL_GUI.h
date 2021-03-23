@@ -5,5 +5,6 @@
 #include "UIPanel.h"
 #include "UIMenu.h"
 #include "UIImage.h"
+#include "UIInputBox.h"
 
 #endif //SDL_GUI_H 
