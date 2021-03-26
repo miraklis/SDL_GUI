@@ -27,12 +27,6 @@
     <ClInclude Include="SDL_GUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UIPanel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIMenu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="UIMain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -40,6 +34,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UIInputBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UIPanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UIMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,12 +50,6 @@
     <ClCompile Include="UILabel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UIPanel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIMenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="UIMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,6 +57,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UIInputBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

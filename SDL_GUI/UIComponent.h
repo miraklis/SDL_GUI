@@ -9,7 +9,7 @@ namespace SDL_GUI {
 	public:
 		virtual void Render() = 0;
 		std::string GetName();
-		void Show();
+		virtual void Show();
 		void Hide();
 		bool IsVisible();
 		virtual void SetPos(int x, int y);
@@ -28,7 +28,6 @@ namespace SDL_GUI {
 		std::string name;
 		SDL_Rect rect;
 		bool visible;
-		virtual void SizeChanged(UIComponent* sender);
 	};
 
 }

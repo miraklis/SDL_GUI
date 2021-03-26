@@ -2,6 +2,13 @@
 
 namespace SDL_GUI {
 
+	//UIComponent::UIComponent(SDL_Renderer* renderer, std::string name, SDL_Rect& rect) {
+	//	this->renderer = renderer;
+	//	this->name = name;
+	//	this->rect = rect;
+	//	this->visible = false;
+	//}
+
 	UIComponent::UIComponent(SDL_Renderer* renderer, std::string name, int x, int y, size_t w, size_t h, bool visible) {
 		this->renderer = renderer;
 		this->name = name;
@@ -10,12 +17,9 @@ namespace SDL_GUI {
 		rect.w = w;
 		rect.h = h;
 		this->visible = visible;
-		this->OnSizeChanged.AddListener(std::bind(&UIComponent::SizeChanged, this, std::placeholders::_1));
 	}
 
 	UIComponent::~UIComponent() {}
-
-	void UIComponent::SizeChanged(UIComponent* sender) {}
 
 	std::string UIComponent::GetName() {
 		return name;

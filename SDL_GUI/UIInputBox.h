@@ -8,7 +8,7 @@ namespace SDL_GUI {
     class UIInputBox : public UILabel {
     public:
         UIInputBox(SDL_Renderer* renderer, std::string name, SDL_Rect rect);
-        ~UIInputBox();
+        ~UIInputBox() override;
         void HandleInput();
         void SetFocus(bool focus);
         void SetMaxChar(size_t maxChar);

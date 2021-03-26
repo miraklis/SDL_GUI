@@ -2,35 +2,41 @@
 
 namespace SDL_GUI {
 
-	UIMenu::UIMenu(SDL_Renderer* renderer, std::string name, int x, int y, size_t w, size_t h, 
-				   std::string fontName, size_t fontSize,
-				   HorizontalAlign hAlign, VerticalAlign vAlign,
-				   SDL_Color bgColor, SDL_Color fgColor, SDL_Color selBGColor, SDL_Color selFGColor,
-				   std::shared_ptr<UIMenu> parent, std::function<bool(std::string)> callback) :
-			UIPanel(renderer, name, x, y, w, h, true, fontName, fontSize, hAlign, vAlign, bgColor, fgColor) {
-		this->hTextAlign = HorizontalAlign::Center;
-		this->vTextAlign = VerticalAlign::Top;
-		this->selBGColor = selBGColor;
-		this->selFGColor = selFGColor;
-		this->parent = parent;
-		this->callback = callback;
+	UIMenu::UIMenu(SDL_Renderer* renderer, std::string name, int x, int y, std::shared_ptr<UIMenu> parent, std::function<bool(std::string)> callback)
+			:UIPanel(renderer, name, x, y) {
+		focus = false;
 		upLimit = 0;
 		selectedItem = 0;
+		bgColor = selFGColor = { 0,0,0,255 };
+		fgColor = selBGColor = { 255,255,255,255 };
+		this->parent = parent;
+		this->callback = callback;
 	}
 
 	UIMenu::~UIMenu() {
+		upLimit = 0;
 		selectedItem = 0;
 		ClearItems();
 	}
 
-	std::shared_ptr<UIMenu> UIMenu::CreateSubMenu(std::string name) {
-		return std::make_shared<UIMenu>(renderer, name, initPos.x, initPos.y, 0, 0,
-										fontName, fontSize, hAlign, vAlign,
-										bgColor, fgColor, selBGColor, selFGColor, shared_from_this(), this->callback);
+	void UIMenu::SetColor(SDL_Color bgColor, SDL_Color fgColor, SDL_Color selBGColor, SDL_Color selFGColor) {
+		this->bgColor = bgColor;
+		this->fgColor = fgColor;
+		this->selBGColor = selBGColor;
+		this->selFGColor = selFGColor;
+		for(auto& c : components) {
+			c->SetColor(bgColor, fgColor);
+		}
+		SelectItem(selectedItem);
+	}
 
+	std::shared_ptr<UIMenu> UIMenu::CreateSubMenu(std::string name) {
+		return std::make_shared<UIMenu>(renderer, name, initPos.x, initPos.y, shared_from_this(), this->callback);
 	}
 
 	void UIMenu::HandleEvents() {
+		if(!focus)
+			return;
         SDL_Event event;
         SDL_PollEvent(&event);
 		switch(event.type) {
@@ -61,8 +67,9 @@ namespace SDL_GUI {
 		}
 	}
 
-	void UIMenu::AddItem(std::string name, std::string caption) {
-		UIPanel::AddItem(name, caption);
+	void UIMenu::AddItem(std::unique_ptr<UILabel> newItem) {
+		newItem->SetColor(bgColor, fgColor);
+		UIPanel::AddItem(std::move(newItem));
 		if(components.size() == 1) // if it is the first Item
 			SelectItem(0); // select it
 	}
@@ -75,6 +82,10 @@ namespace SDL_GUI {
 		components[selectedItem]->SetColor(bgColor, fgColor);
 		selectedItem = index;
 		components[selectedItem]->SetColor(selBGColor, selFGColor);
+	}
+
+	void UIMenu::SetFocus(bool focus) {
+		this->focus = focus;
 	}
 
 	std::shared_ptr<UIMenu> UIMenu::GetParent() {

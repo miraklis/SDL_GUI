@@ -9,6 +9,7 @@ namespace SDL_GUI {
 	}
 
 	UIInputBox::~UIInputBox() {
+		SDL_StopTextInput();
 	}
 
 	void UIInputBox::HandleInput() {
@@ -53,6 +54,10 @@ namespace SDL_GUI {
 
 	void UIInputBox::SetFocus(bool focus) {
 		this->focus = focus;
+		if(focus)
+			SDL_StartTextInput();
+		else
+			SDL_StopTextInput();
 	}
 
 	void UIInputBox::SetMaxChar(size_t maxChar) {

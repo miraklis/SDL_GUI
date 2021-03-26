@@ -2,6 +2,22 @@
 
 namespace SDL_GUI {
 
+	//UILabel::UILabel(SDL_Renderer* renderer, std::string name, std::string caption, SDL_Rect& rect) 
+	//		: UIComponent(renderer, name, rect) {
+	//	autosize = true;
+	//	bgColor = { 0,0,0,255 };
+	//	fgColor = { 255,255,255,255 };
+	//	hAlign = HorizontalAlign::Left;
+	//	vAlign = VerticalAlign::Top;
+	//	this->caption = caption;
+	//	this->font = TTF_OpenFont(sFonts::TTF_TIMES, 16);
+	//	txtOffsetX = txtOffsetY = 0;
+	//	texture = nullptr;
+	//	textRegion.x = 0;
+	//	textRegion.y = 0;
+	//	updateText();
+	//}
+
 	UILabel::UILabel(SDL_Renderer* renderer, std::string name, std::string caption, std::string fontName, size_t fontSize,
 					 int posX, int posY, size_t w, size_t h, bool autosize, HorizontalAlign hAlign, VerticalAlign vAlign,
 					 SDL_Color bgColor, SDL_Color fgColor) :
@@ -92,9 +108,10 @@ namespace SDL_GUI {
 
 	void UILabel::SetAutosize(bool autosize) {
 		this->autosize = autosize;
+		updateText();
 	}
 
-	int UILabel::GetTextWidth() const {
+	size_t UILabel::GetTextWidth() const {
 		return textRegion.w;
 	}
 

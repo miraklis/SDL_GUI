@@ -8,10 +8,11 @@ namespace SDL_GUI {
 
 	class UILabel : public UIComponent {
 	public:
+		//UILabel(SDL_Renderer* renderer, std::string name, std::string caption, SDL_Rect& rect);
 		UILabel(SDL_Renderer* renderer, std::string name, std::string caption, std::string fontName=sFonts::TTF_TIMES, size_t fontSize=16,
 				int posX = 0, int posY = 0, size_t w = 0, size_t h = 0, bool autosize = true, HorizontalAlign hAlign=HorizontalAlign::Left, VerticalAlign vAlign=VerticalAlign::Top,
 				SDL_Color bgColor = { 0,0,0,255 }, SDL_Color fgColor = { 255,255,255,255 });
-		virtual ~UILabel();
+		virtual ~UILabel() override;
 		void Render() override;
 		void SetSize(size_t w, size_t h) override;
 		void SetText(std::string caption);
@@ -21,7 +22,7 @@ namespace SDL_GUI {
 		void AlignVertical(VerticalAlign vAlign);
 		void Align();
 		void SetAutosize(bool autosize);
-		int GetTextWidth() const;
+		size_t GetTextWidth() const;
 		Event<UILabel*> OnTextChanged;
 	protected:
 		bool autosize;
