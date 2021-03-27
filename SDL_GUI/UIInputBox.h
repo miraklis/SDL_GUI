@@ -10,9 +10,8 @@ namespace SDL_GUI {
     public:
         UIInputBox(SDL_Renderer* renderer, std::string name, std::string title);
         UIInputBox(SDL_Renderer* renderer, std::string name, std::string title,
-                int x, int y, size_t maxChar,
-                std::string fontName, size_t fontSize,
-                SDL_Color& bgColor, SDL_Color& fgColor);
+                    int x, int y, size_t maxChar, std::string fontName, size_t fontSize,
+                    SDL_Color& bgColor, SDL_Color& fgColor, HorizontalAlign hTextAlign);
         ~UIInputBox() override;
         void HandleInput();
         void SetFocus(bool focus);

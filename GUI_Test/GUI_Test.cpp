@@ -116,9 +116,9 @@ int main()
     
     sX = 400;
     sY = 20;
-    inBox = std::make_unique<SDL_GUI::UIInputBox>(renderer, "panel", "Input Name");
+    inBox = std::make_unique<SDL_GUI::UIInputBox>(renderer, "panel", "Input Message", sX, sY, 20, 
+                                                  SDL_GUI::sFonts::TTF_TIMES, 24, blue, white, SDL_GUI::HorizontalAlign::Center);
     inBox->OnInputFinished.AddListener(inputfinished);
-    inBox->SetPos(sX, sY);
     inBox->SetFocus(true);
     inBox->Show();
     
