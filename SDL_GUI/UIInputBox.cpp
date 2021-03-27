@@ -2,25 +2,32 @@
 
 namespace SDL_GUI {
 
-	SDL_Color defaultBGColor{ 0,0,0,255 };
-	SDL_Color defaultFGColor{ 255,255,255,255 };
+	static SDL_Color defaultBGColor{ 0,0,0,255 };
+	static SDL_Color defaultFGColor{ 255,255,255,255 };
 
-	UIInputBox::UIInputBox(SDL_Renderer* renderer, std::string name)
-		:UILabel(renderer, name, "") 
+	UIInputBox::UIInputBox(SDL_Renderer* renderer, std::string name, std::string title)
+		:UIInputBox(renderer, name, title, 0, 0, 10, sFonts::TTF_TIMES, 16, defaultBGColor, defaultFGColor)
+	{}
+
+	UIInputBox::UIInputBox(SDL_Renderer* renderer, std::string name, std::string title,
+						   int x, int y, size_t maxChar,
+						   std::string fontName, size_t fontSize,
+						   SDL_Color& bgColor, SDL_Color& fgColor)
+		:UIPanel(renderer, name, x, y)
 	{
 		_focus = false;
-		_maxChar = 10;
+		_maxChar = maxChar;
+		_rect.w = (maxChar * fontSize) + fontSize;
+		_rect.h = 2 * fontSize;
+		std::unique_ptr<UILabel> item = std::make_unique<UILabel>(renderer, "title", title, x, y, _rect.w, fontSize, false, 
+										   fontName, fontSize, bgColor, fgColor, 
+										   HorizontalAlign::Left, VerticalAlign::Middle);
+		_components.push_back(std::move(item));
+		item = std::make_unique<UILabel>(renderer, "content", "", x, y + fontSize, _rect.w, fontSize, false,
+										   fontName, fontSize, bgColor, fgColor,
+										   HorizontalAlign::Left, VerticalAlign::Middle);
+		_components.push_back(std::move(item));
 	}
-
-	UIInputBox::UIInputBox(SDL_Renderer* renderer, std::string name, std::string caption,
-						   int x, int y, size_t w, size_t h, bool autosize,
-						   std::string fontName, size_t fontSize,
-						   SDL_Color& bgColor, SDL_Color& fgColor,
-						   HorizontalAlign hAlign, VerticalAlign vAlign)
-		:UILabel(renderer, name, caption, 0, 0, 0, 0, true,
-				  sFonts::TTF_TIMES, 16, defaultBGColor, defaultFGColor,
-				  HorizontalAlign::Left, VerticalAlign::Top)
-	{}
 
 	UIInputBox::~UIInputBox() {
 		SDL_StopTextInput();
@@ -33,27 +40,28 @@ namespace SDL_GUI {
 		SDL_PollEvent(&event);
 		int len;
 		bool changed{ false };
+		std::string txt = _components[1]->GetText();
 		switch(event.type) {
 			case SDL_TEXTINPUT:
-				if(_caption.size() < _maxChar) {
-					_caption += event.text.text;
+				if(txt.size() < _maxChar) {
+					txt += event.text.text;
 					changed = true;
 				}
 				break;
 			case SDL_KEYDOWN:
 				switch(event.key.keysym.sym) {
 					case SDLK_BACKSPACE:
-						len = _caption.size();
+						len = txt.size();
 						if(len > 0) {
-							_caption = _caption.substr(0, len - 1);
+							txt = txt.substr(0, len - 1);
 							changed = true;
 						}
 						break;
 					case SDLK_RETURN:
-						OnInputFinished(true, _caption);
+						OnInputFinished(true, txt);
 						break;
 					case SDLK_ESCAPE:
-						OnInputFinished(false, _caption);
+						OnInputFinished(false, txt);
 						break;
 				}
 				break;
@@ -61,8 +69,7 @@ namespace SDL_GUI {
 				break;
 		}
 		if(changed) {
-			updateText();
-			Align();
+			_components[1]->SetText(txt);
 		}
 	}
 

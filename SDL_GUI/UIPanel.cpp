@@ -68,14 +68,6 @@ namespace SDL_GUI {
 		AddItem(std::move(item));
 	}
 
-	void UIPanel::AddInputBox(std::string name)
-	{
-		std::unique_ptr<UIInputBox> item = std::make_unique<UIInputBox>(
-			_renderer, name, "", 0, 0, 0, 0, false,
-			_defaultFontName, _defaultFontSize, _defaultBGColor, _defaultFGColor, _defaultHorAlign, _defaultVerAlign);
-		AddItem(std::move(item));
-	}
-
 	void UIPanel::RemoveItem(std::string name) {
 		_components.erase(std::remove_if(_components.begin(), _components.end(), [&](auto const& c) { return c->GetName() == name; }), _components.end());
 		updatePanel();

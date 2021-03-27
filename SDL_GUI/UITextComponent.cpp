@@ -49,6 +49,11 @@ namespace SDL_GUI {
 		_font = TTF_OpenFont(fntName.c_str(), fntSize);
 	}
 
+	std::string UITextComponent::GetText() const
+	{
+		return _caption;
+	}
+
 	size_t UITextComponent::GetTextWidth() const
 	{
 		return _textRegion.w;

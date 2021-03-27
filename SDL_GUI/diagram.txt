@@ -1,0 +1,7 @@
+UIComponent 
+	-> UITexComponent 
+		-> UILabel 
+	-> UIImage
+	-> UIPanel
+		-> UIMenu
+		-> UIInputBox

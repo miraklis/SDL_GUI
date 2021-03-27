@@ -22,6 +22,7 @@ SDL_Renderer* renderer;
 bool running{ true };
 unique_ptr<SDL_GUI::UIMenu> menu;
 unique_ptr<SDL_GUI::UIPanel> panel;
+unique_ptr<SDL_GUI::UIInputBox> inBox;
 SDL_GUI::UIInputBox* in;
 
 void initSDL() {
@@ -48,7 +49,9 @@ void initSDL() {
 }
 
 void inputfinished(bool entered, string s) {
-    in->SetFocus(false);
+    if(!entered)
+        return;
+    inBox->SetFocus(false);
     menu->SetFocus(true);
     unique_ptr<SDL_GUI::UILabel> lbl = std::make_unique<SDL_GUI::UILabel>(
         renderer, "lbl4", s,
@@ -99,8 +102,9 @@ bool menuCommand(string cmd) {
 int main()
 {
     initSDL();
-
-    menu = make_unique<SDL_GUI::UIMenu>(renderer, "menu", 0, 0, nullptr, menuCommand);
+    int sX = 0;
+    int sY = 0;
+    menu = make_unique<SDL_GUI::UIMenu>(renderer, "menu", sX, sY, nullptr, menuCommand);
     menu->SetDefaultColors(dred, white, red, white);
     menu->SetDefaultHorAlign(SDL_GUI::HorizontalAlign::Center);
     menu->SetDefaultVerAlign(SDL_GUI::VerticalAlign::Middle);
@@ -110,8 +114,16 @@ int main()
     menu->AddLabel("panelRemove", "Remove Item");
     menu->Show();
     
-    int sX = 400;
-    int sY = 300;
+    sX = 400;
+    sY = 20;
+    inBox = std::make_unique<SDL_GUI::UIInputBox>(renderer, "panel", "Input Name");
+    inBox->OnInputFinished.AddListener(inputfinished);
+    inBox->SetPos(sX, sY);
+    inBox->SetFocus(true);
+    inBox->Show();
+    
+    sX = 400;
+    sY = 300;
     panel = std::make_unique<SDL_GUI::UIPanel>(renderer, "panel", sX, sY);
     panel->SetDefaultColors(red, white);
     panel->AddLabel("lbl1", "This is first test");
@@ -119,17 +131,10 @@ int main()
     panel->AddLabel("lbl3", "This is third test");
     panel->Show();
 
-    std::unique_ptr<SDL_GUI::UIInputBox> input = std::make_unique<SDL_GUI::UIInputBox>(renderer, "input");
-    input->SetFocus(true);
-    input->SetMaxChar(10);
-    input->OnInputFinished.AddListener(inputfinished);
-    panel->AddItem(std::move(input));
-    in = static_cast<SDL_GUI::UIInputBox*>(panel->operator[]("input"));
 
     while(running) {
         menu->HandleEvents();
-        if(in)
-            in->HandleInput();
+        inBox->HandleInput();
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
@@ -137,6 +142,7 @@ int main()
         SDL_RenderDrawLine(renderer, sX, 0, sX, 1000);
         menu->Render();
         panel->Render();
+        inBox->Render();
         SDL_RenderPresent(renderer);
     }
     SDL_Quit();

@@ -7,7 +7,8 @@
 
 namespace SDL_GUI {
 
-	class UIPanel : public UIComponent {
+	class UIPanel : public UIComponent 
+	{
 	public:
 		UIPanel(SDL_Renderer* renderer, std::string name, int x, int y);
 		virtual ~UIPanel() override;
@@ -18,7 +19,6 @@ namespace SDL_GUI {
 		void Show() override;
 		virtual void AddItem(std::unique_ptr<UITextComponent> newItem);
 		void AddLabel(std::string name, std::string caption);
-		void AddInputBox(std::string name);
 		void RemoveItem(std::string name);
 		void ClearItems();
 		void SetHorizontalAlign(HorizontalAlign hAlign);

@@ -11,11 +11,9 @@ namespace SDL_GUI {
 		virtual void SetText(std::string caption);
 		virtual void SetColor(const SDL_Color& bgColor, const SDL_Color& fgColor);
 		virtual void SetFont(std::string fntName, size_t fntSize);
+		virtual std::string GetText() const;
 		size_t GetTextWidth() const;
 		Event<UITextComponent*> OnTextChanged;
-		virtual void HandleInput() {}
-		virtual void SetFocus(bool focus) {}
-		virtual void SetMaxChar(size_t maxChar)	{}
 	protected:
 		UITextComponent(std::string name, std::string caption);
 		UITextComponent(std::string name, std::string caption, int x, int y, size_t w, size_t h,
