@@ -10,23 +10,21 @@ namespace SDL_GUI {
 	public:
 		UIMenu(SDL_Renderer* renderer, std::string name, int x, int y, std::shared_ptr<UIMenu> parent, std::function<bool(std::string)> callback);
 		~UIMenu() override;
-		void SetColor(SDL_Color bgColor, SDL_Color fgColor, SDL_Color selBGColor, SDL_Color selFGColor);
+		void SetDefaultColors(SDL_Color bgColor, SDL_Color fgColor, SDL_Color selBGColor, SDL_Color selFGColor);
 		std::shared_ptr<UIMenu> CreateSubMenu(std::string name);
 		void HandleEvents();
-		void AddItem(std::unique_ptr<UILabel> newItem) override;
+		void AddItem(std::unique_ptr<UITextComponent> newItem) override;
 		void SelectItem(size_t index);
 		void SetFocus(bool focus);
 		std::shared_ptr<UIMenu> GetParent();
 	private:
-		std::function<bool(std::string)> callback;
-		std::shared_ptr<UIMenu> parent;
-		size_t selectedItem;
-		size_t upLimit;
-		SDL_Color bgColor;
-		SDL_Color fgColor;
-		SDL_Color selFGColor;
-		SDL_Color selBGColor;
-		bool focus;
+		std::function<bool(std::string)> _callback;
+		std::shared_ptr<UIMenu> _parent;
+		size_t _selectedItem;
+		size_t _upLimit;
+		SDL_Color _selFGColor;
+		SDL_Color _selBGColor;
+		bool _focus;
 	};
 
 }

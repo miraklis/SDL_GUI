@@ -2,18 +2,32 @@
 
 namespace SDL_GUI {
 
-	UIInputBox::UIInputBox(SDL_Renderer* renderer, std::string name, SDL_Rect rect):
-			UILabel(renderer, name, "", sFonts::TTF_TIMES, 24, rect.x, rect.y, rect.w, rect.h, false) {
-		focus = false;
-		maxChar = 10;
+	SDL_Color defaultBGColor{ 0,0,0,255 };
+	SDL_Color defaultFGColor{ 255,255,255,255 };
+
+	UIInputBox::UIInputBox(SDL_Renderer* renderer, std::string name)
+		:UILabel(renderer, name, "") 
+	{
+		_focus = false;
+		_maxChar = 10;
 	}
+
+	UIInputBox::UIInputBox(SDL_Renderer* renderer, std::string name, std::string caption,
+						   int x, int y, size_t w, size_t h, bool autosize,
+						   std::string fontName, size_t fontSize,
+						   SDL_Color& bgColor, SDL_Color& fgColor,
+						   HorizontalAlign hAlign, VerticalAlign vAlign)
+		:UILabel(renderer, name, caption, 0, 0, 0, 0, true,
+				  sFonts::TTF_TIMES, 16, defaultBGColor, defaultFGColor,
+				  HorizontalAlign::Left, VerticalAlign::Top)
+	{}
 
 	UIInputBox::~UIInputBox() {
 		SDL_StopTextInput();
 	}
 
 	void UIInputBox::HandleInput() {
-		if(!focus)
+		if(!_focus)
 			return;
 		SDL_Event event;
 		SDL_PollEvent(&event);
@@ -21,25 +35,25 @@ namespace SDL_GUI {
 		bool changed{ false };
 		switch(event.type) {
 			case SDL_TEXTINPUT:
-				if(caption.size() < maxChar) {
-					caption += event.text.text;
+				if(_caption.size() < _maxChar) {
+					_caption += event.text.text;
 					changed = true;
 				}
 				break;
 			case SDL_KEYDOWN:
 				switch(event.key.keysym.sym) {
 					case SDLK_BACKSPACE:
-						len = caption.size();
+						len = _caption.size();
 						if(len > 0) {
-							caption = caption.substr(0, len - 1);
+							_caption = _caption.substr(0, len - 1);
 							changed = true;
 						}
 						break;
 					case SDLK_RETURN:
-						OnInputFinished(true, caption);
+						OnInputFinished(true, _caption);
 						break;
 					case SDLK_ESCAPE:
-						OnInputFinished(false, caption);
+						OnInputFinished(false, _caption);
 						break;
 				}
 				break;
@@ -53,7 +67,7 @@ namespace SDL_GUI {
 	}
 
 	void UIInputBox::SetFocus(bool focus) {
-		this->focus = focus;
+		_focus = focus;
 		if(focus)
 			SDL_StartTextInput();
 		else
@@ -61,7 +75,7 @@ namespace SDL_GUI {
 	}
 
 	void UIInputBox::SetMaxChar(size_t maxChar) {
-		this->maxChar = maxChar;
+		_maxChar = maxChar;
 	}
 
 }

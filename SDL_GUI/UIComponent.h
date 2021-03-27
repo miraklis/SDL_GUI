@@ -3,31 +3,37 @@
 
 #include "UIMain.h"
 
-namespace SDL_GUI {
+namespace SDL_GUI 
+{
 
-	class UIComponent {
+	class UIComponent 
+	{
 	public:
-		virtual void Render() = 0;
-		std::string GetName();
-		virtual void Show();
-		void Hide();
-		bool IsVisible();
-		virtual void SetPos(int x, int y);
-		void SetX(int x);
-		void SetY(int y);
-		virtual void SetSize(size_t w, size_t h);
-		void SetWidth(size_t w);
-		void SetHeight(size_t h);
-		const SDL_Rect& GetRect();
-		Event<UIComponent*> OnSizeChanged;
-	protected:
-		UIComponent(SDL_Renderer* renderer, std::string name,
-					int x=0, int y=0, size_t w=0, size_t h=0, bool visible=false);
 		virtual ~UIComponent();
-		SDL_Renderer* renderer;
-		std::string name;
-		SDL_Rect rect;
-		bool visible;
+		virtual void Render() = 0;
+		virtual void Show();
+		virtual void Hide();
+		virtual void SetPos(int x, int y);
+		virtual void SetX(int x);
+		virtual void SetY(int y);
+		virtual void SetSize(size_t w, size_t h);
+		virtual void SetWidth(size_t w);
+		virtual void SetHeight(size_t h);
+		virtual std::string GetName() const;
+		virtual bool IsVisible() const;
+		virtual const SDL_Rect& GetRect() const;
+		virtual int GetPosX() const;
+		virtual int GetPosY() const;
+		virtual size_t GetWidth() const;
+		virtual size_t GetHeight() const;
+		Event<UIComponent*> OnResized;
+	protected:
+		UIComponent(std::string name, int x, int y);
+		UIComponent(std::string name, int x, int y, size_t w, size_t h);
+		SDL_Renderer* _renderer;
+		std::string _name;
+		SDL_Rect _rect;
+		bool _visible;
 	};
 
 }

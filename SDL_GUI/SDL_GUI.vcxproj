@@ -171,6 +171,7 @@
     <ClInclude Include="UILabel.h" />
     <ClInclude Include="UIMenu.h" />
     <ClInclude Include="UIPanel.h" />
+    <ClInclude Include="UITextComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UIImage.cpp" />
@@ -180,6 +181,7 @@
     <ClCompile Include="UILabel.cpp" />
     <ClCompile Include="UIMenu.cpp" />
     <ClCompile Include="UIPanel.cpp" />
+    <ClCompile Include="UITextComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="assets\Arcade.ttf">

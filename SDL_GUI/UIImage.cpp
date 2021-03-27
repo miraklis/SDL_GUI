@@ -3,22 +3,23 @@
 namespace SDL_GUI {
 
 	UIImage::UIImage(SDL_Renderer* renderer, std::string imgName, int x, int y) : 
-			UIComponent(renderer, imgName, 0, 0, false) {
-		texture = LoadTexture(renderer, imgName);
-		rect.x = x;
-		rect.y = y;
-		SDL_QueryTexture(texture, nullptr, nullptr, &rect.w, &rect.h);
+			UIComponent(imgName, 0, 0) {
+		_renderer = renderer;
+		_texture = LoadTexture(renderer, imgName);
+		_rect.x = x;
+		_rect.y = y;
+		SDL_QueryTexture(_texture, nullptr, nullptr, &_rect.w, &_rect.h);
 	}
 
 	UIImage::~UIImage() {
-		SDL_DestroyTexture(texture);
+		SDL_DestroyTexture(_texture);
 	}
 
 	void UIImage::Render() {
-		if(!visible)
+		if(!_visible)
 			return;
-		SDL_Rect src{ 0, 0, rect.w, rect.h };
-		SDL_RenderCopy(renderer, texture, &src, &rect);
+		SDL_Rect src{ 0, 0, _rect.w, _rect.h };
+		SDL_RenderCopy(_renderer, _texture, &src, &_rect);
 	}
 
 }

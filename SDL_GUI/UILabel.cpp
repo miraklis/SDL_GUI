@@ -1,154 +1,120 @@
 #include "UILabel.h"
 
 namespace SDL_GUI {
+	
+	static SDL_Color defaultBGColor{ 0,0,0,255 };
+	static SDL_Color defaultFGColor{ 255,255,255,255 };
 
-	//UILabel::UILabel(SDL_Renderer* renderer, std::string name, std::string caption, SDL_Rect& rect) 
-	//		: UIComponent(renderer, name, rect) {
-	//	autosize = true;
-	//	bgColor = { 0,0,0,255 };
-	//	fgColor = { 255,255,255,255 };
-	//	hAlign = HorizontalAlign::Left;
-	//	vAlign = VerticalAlign::Top;
-	//	this->caption = caption;
-	//	this->font = TTF_OpenFont(sFonts::TTF_TIMES, 16);
-	//	txtOffsetX = txtOffsetY = 0;
-	//	texture = nullptr;
-	//	textRegion.x = 0;
-	//	textRegion.y = 0;
-	//	updateText();
-	//}
+	UILabel::UILabel(SDL_Renderer* renderer, std::string name, std::string caption)
+		:UILabel(renderer, name, caption, 0, 0, 0, 0, true, 
+				 sFonts::TTF_TIMES, 16, defaultBGColor, defaultFGColor,
+				 HorizontalAlign::Left, VerticalAlign::Top)
+	{}
 
-	UILabel::UILabel(SDL_Renderer* renderer, std::string name, std::string caption, std::string fontName, size_t fontSize,
-					 int posX, int posY, size_t w, size_t h, bool autosize, HorizontalAlign hAlign, VerticalAlign vAlign,
-					 SDL_Color bgColor, SDL_Color fgColor) :
-			UIComponent(renderer, name, posX, posY, w, h, false) {
-		this->autosize = autosize;
-		this->bgColor = bgColor;
-		this->fgColor = fgColor;
-		this->hAlign = hAlign;
-		this->vAlign = vAlign;
-		this->caption = caption;
-		this->font = TTF_OpenFont(fontName.c_str(), fontSize);
-		txtOffsetX = txtOffsetY = 0;
-		texture = nullptr;
-		textRegion.x = 0;
-		textRegion.y = 0;
+	UILabel::UILabel(SDL_Renderer* renderer, std::string name, std::string caption, 
+					 int x, int y, size_t w, size_t h, bool autosize, 
+					 std::string fontName, size_t fontSize,
+					 SDL_Color& bgColor, SDL_Color& fgColor,
+					 HorizontalAlign hAlign, VerticalAlign vAlign)
+			:UITextComponent(name, caption, x, y, w, h, fontName, fontSize, bgColor, fgColor)
+	{
+		_renderer = renderer;
+		_autosize = autosize;
+		_hAlign = hAlign;
+		_vAlign = vAlign;
+		_txtOffsetX = _txtOffsetY = 0;
 		updateText();
 	}
 
-	UILabel::~UILabel() {
-		if(font)
-			TTF_CloseFont(font);
-		if(texture)
-			SDL_DestroyTexture(texture);
-	}
+	UILabel::~UILabel() 
+	{}
 
 	void UILabel::SetSize(size_t w, size_t h) {
-		if(autosize)
+		if(_autosize)
 			return;
-		UIComponent::SetSize(w, h);
+		UITextComponent::SetSize(w, h);
+		updateText();
 		Align();
+		OnResized(this);
 	}
 
 	void UILabel::SetText(std::string caption) {
-		if(this->caption == caption)
-			return;
-		this->caption = caption;
+		UITextComponent::SetText(caption);
 		updateText();
 		Align();
 		OnTextChanged(this);
 	}
 
-	void UILabel::SetColor(const SDL_Color& bgColor, const SDL_Color& fgColor) {
-		this->bgColor = bgColor;
-		this->fgColor = fgColor;
-		updateText();
-	}
-
-	void UILabel::SetFont(std::string fntName, size_t fntSize) {
-		font = TTF_OpenFont(fntName.c_str(), fntSize);
+	void UILabel::SetFont(std::string fontName, size_t fontSize) {
+		UITextComponent::SetFont(fontName, fontSize);
 		updateText();
 		Align();
 	}
 
 	void UILabel::AlignHorizontal(HorizontalAlign hAlign) {
-		this->hAlign = hAlign;
+		_hAlign = hAlign;
 		switch(hAlign) {
 			case HorizontalAlign::Left:
-				txtOffsetX = 0;
+				_txtOffsetX = 0;
 				break;
 			case HorizontalAlign::Center:
-				txtOffsetX = (rect.w / 2) - (textRegion.w / 2);
+				_txtOffsetX = (_rect.w / 2) - (_textRegion.w / 2);
 				break;
 			case HorizontalAlign::Right:
-				txtOffsetX = rect.w - textRegion.w;
+				_txtOffsetX = _rect.w - _textRegion.w;
 				break;
 		}
 	}
 
 	void UILabel::AlignVertical(VerticalAlign vAlign) {
-		this->vAlign = vAlign;
+		_vAlign = vAlign;
 		switch(vAlign) {
 			case VerticalAlign::Top:
-				txtOffsetY = 0;
+				_txtOffsetY = 0;
 				break;
 			case VerticalAlign::Middle:
-				txtOffsetY = (rect.h / 2) - (textRegion.h / 2);
+				_txtOffsetY = (_rect.h / 2) - (_textRegion.h / 2);
 				break;
 			case VerticalAlign::Bottom:
-				txtOffsetY = rect.h - textRegion.h;
+				_txtOffsetY = _rect.h - _textRegion.h;
 				break;
 		}
 	}
 
 	void UILabel::Align() {
-		AlignHorizontal(hAlign);
-		AlignVertical(vAlign);
+		AlignHorizontal(_hAlign);
+		AlignVertical(_vAlign);
 	}
 
 	void UILabel::SetAutosize(bool autosize) {
-		this->autosize = autosize;
+		_autosize = autosize;
 		updateText();
 	}
 
-	size_t UILabel::GetTextWidth() const {
-		return textRegion.w;
-	}
-
 	void UILabel::Render() {
-		if(!visible)
+		if(!_visible)
 			return;
-		SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
-		SDL_RenderFillRect(renderer, &rect);
-		SDL_SetRenderDrawColor(renderer, fgColor.r, fgColor.g, fgColor.b, fgColor.a);
+		SDL_SetRenderDrawColor(_renderer, _bgColor.r, _bgColor.g, _bgColor.b, _bgColor.a);
+		SDL_RenderFillRect(_renderer, &_rect);
+		SDL_SetRenderDrawColor(_renderer, _fgColor.r, _fgColor.g, _fgColor.b, _fgColor.a);
 		SDL_Rect src;
 		SDL_Rect dest;
-		src.x = std::abs(std::min(0, txtOffsetX));
-		dest.x = rect.x + std::max(0, txtOffsetX);
-		src.y = std::abs(std::min(0, txtOffsetY));
-		dest.y = rect.y + std::max(0, txtOffsetY);
-		src.w = dest.w = std::min(rect.w, textRegion.w);
-		src.h = dest.h = std::min(rect.h, textRegion.h);
-		SDL_RenderCopy(renderer, texture, &src, &dest);
+		src.x = std::abs(std::min(0, _txtOffsetX));
+		dest.x = _rect.x + std::max(0, _txtOffsetX);
+		src.y = std::abs(std::min(0, _txtOffsetY));
+		dest.y = _rect.y + std::max(0, _txtOffsetY);
+		src.w = dest.w = std::min(_rect.w, _textRegion.w);
+		src.h = dest.h = std::min(_rect.h, _textRegion.h);
+		SDL_RenderCopy(_renderer, _texture, &src, &dest);
 	}
 
 	void UILabel::updateText() {
-		if(font == nullptr)
-			return;
-		if(!caption.empty()) {
-			SDL_Surface* surface = TTF_RenderText_Blended(font, caption.c_str(), fgColor);
-			texture = SDL_CreateTextureFromSurface(renderer, surface);
-			SDL_FreeSurface(surface);
-			SDL_QueryTexture(texture, nullptr, nullptr, &textRegion.w, &textRegion.h);
-		} else {
-			textRegion.w = 0;
-			textRegion.h = 0;
+		UITextComponent::updateText();
+		if(_autosize || _rect.w == 0) {
+			_rect.w = _textRegion.w;
 		}
-		if(autosize || rect.w == 0) {
-			rect.w = textRegion.w;
-		}
-		if(autosize || rect.h == 0) {
-			rect.h = textRegion.h;
+		if(_autosize || _rect.h == 0) {
+			_rect.h = _textRegion.h;
 		}
 	}
 

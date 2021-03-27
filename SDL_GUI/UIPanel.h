@@ -3,7 +3,7 @@
 
 #include "UIMain.h"
 #include "UIComponent.h"
-#include "UILabel.h"
+#include "UITextComponent.h"
 
 namespace SDL_GUI {
 
@@ -11,23 +11,35 @@ namespace SDL_GUI {
 	public:
 		UIPanel(SDL_Renderer* renderer, std::string name, int x, int y);
 		virtual ~UIPanel() override;
-		UILabel* operator[](size_t index);
-		UILabel* operator[](std::string name);
+		UITextComponent* operator[](size_t index);
+		UITextComponent* operator[](std::string name);
 		void Render() override;
 		void SetPos(int x, int y) override;
 		void Show() override;
-		virtual void AddItem(std::unique_ptr<UILabel> newItem);
+		virtual void AddItem(std::unique_ptr<UITextComponent> newItem);
+		void AddLabel(std::string name, std::string caption);
+		void AddInputBox(std::string name);
 		void RemoveItem(std::string name);
 		void ClearItems();
 		void SetHorizontalAlign(HorizontalAlign hAlign);
 		void SetVerticalAlign(VerticalAlign vAlign);
+		void SetDefaultHorAlign(HorizontalAlign hAlign);
+		void SetDefaultVerAlign(VerticalAlign vAlign);
+		void SetDefaultFont(std::string fontName, size_t fontSize);
+		void SetDefaultColors(SDL_Color& bgColor, SDL_Color fgColor);
 	protected:
-		std::vector<std::unique_ptr<UILabel>> components;
-		SDL_Rect initPos;
-		HorizontalAlign hAlign;
-		VerticalAlign vAlign;
-		void UpdatePanel();
-		void ItemChanged(UILabel* sender);
+		std::vector<std::unique_ptr<UITextComponent>> _components;
+		SDL_Rect _initPos;
+		HorizontalAlign _hAlign;
+		VerticalAlign _vAlign;
+		HorizontalAlign _defaultHorAlign;
+		VerticalAlign _defaultVerAlign;
+		std::string _defaultFontName;
+		size_t _defaultFontSize;
+		SDL_Color _defaultBGColor;
+		SDL_Color _defaultFGColor;
+		void updatePanel();
+		void itemChanged(UITextComponent* sender);
 	};
 
 }

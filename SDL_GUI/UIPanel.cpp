@@ -1,28 +1,37 @@
 #include "UIPanel.h"
+#include "UILabel.h"
+#include "UIInputBox.h"
 
 namespace SDL_GUI {
 
 	UIPanel::UIPanel(SDL_Renderer* renderer, std::string name, int x, int y) 
-			: UIComponent(renderer, name, x, y) {
-		initPos = rect;
-		hAlign = HorizontalAlign::Left;
-		vAlign = VerticalAlign::Top;
+			: UIComponent(name, x, y, 0, 0) {
+		_renderer = renderer;
+		_initPos = _rect;
+		_hAlign = HorizontalAlign::Left;
+		_vAlign = VerticalAlign::Top;
+		_defaultHorAlign = HorizontalAlign::Left;
+		_defaultVerAlign = VerticalAlign::Top;
+		_defaultFontName = sFonts::TTF_TIMES;
+		_defaultFontSize = 16;
+		_defaultBGColor = { 0,0,0,255 };
+		_defaultFGColor = { 255,255,255,255 };
 	}
 
 	UIPanel::~UIPanel() {
 		ClearItems();
 	}
 
-	UILabel* UIPanel::operator[](size_t index) {
-		if(index < 0 || index >= components.size())
+	UITextComponent* UIPanel::operator[](size_t index) {
+		if(index < 0 || index >= _components.size())
 			return nullptr;
-		return components[index].get();
+		return _components[index].get();
 	}
 
-	UILabel* UIPanel::operator[](std::string name) {
-		if(components.size() == 0)
+	UITextComponent* UIPanel::operator[](std::string name) {
+		if(_components.size() == 0)
 			return nullptr;
-		for(auto& c : components) {
+		for(auto& c : _components) {
 			if(c->GetName() == name)
 				return c.get();
 		}
@@ -30,96 +39,129 @@ namespace SDL_GUI {
 	}
 
 	void UIPanel::Render() {
-		if(!visible)
+		if(!_visible)
 			return;
-		for(const auto& c : components) {
+		for(const auto& c : _components) {
 			c->Render();
 		}
 	}
 
 	void UIPanel::SetPos(int x, int y) {
 		UIComponent::SetPos(x, y);
-		initPos.x = x;
-		initPos.y = y;
-		UpdatePanel();
+		_initPos.x = x;
+		_initPos.y = y;
+		updatePanel();
 	}
 
-	void UIPanel::AddItem(std::unique_ptr<UILabel> newItem) {
-		newItem->OnTextChanged.AddListener(std::bind(&UIPanel::ItemChanged, this, std::placeholders::_1));
-		if(IsVisible())
+	void UIPanel::AddItem(std::unique_ptr<UITextComponent> newItem) {
+		newItem->OnTextChanged.AddListener(std::bind(&UIPanel::itemChanged, this, std::placeholders::_1));
+		if(_visible)
 			newItem->Show();
-		components.push_back(move(newItem));
-		UpdatePanel();
+		_components.push_back(std::move(newItem));
+		updatePanel();
+	}
+
+	void UIPanel::AddLabel(std::string name, std::string caption) {
+		std::unique_ptr<UILabel> item = std::make_unique<UILabel>(
+			_renderer, name, caption, 0, 0, 0, 0, false,
+			_defaultFontName, _defaultFontSize,	_defaultBGColor, _defaultFGColor, _defaultHorAlign, _defaultVerAlign);
+		AddItem(std::move(item));
+	}
+
+	void UIPanel::AddInputBox(std::string name)
+	{
+		std::unique_ptr<UIInputBox> item = std::make_unique<UIInputBox>(
+			_renderer, name, "", 0, 0, 0, 0, false,
+			_defaultFontName, _defaultFontSize, _defaultBGColor, _defaultFGColor, _defaultHorAlign, _defaultVerAlign);
+		AddItem(std::move(item));
 	}
 
 	void UIPanel::RemoveItem(std::string name) {
-		components.erase(std::remove_if(components.begin(), components.end(), [&](auto const& c) { return c->GetName() == name; }), components.end());
-		UpdatePanel();
+		_components.erase(std::remove_if(_components.begin(), _components.end(), [&](auto const& c) { return c->GetName() == name; }), _components.end());
+		updatePanel();
 	}
 
 	void UIPanel::ClearItems() {
-		if(components.size() > 0)
-			components.clear();
+		if(_components.size() > 0)
+			_components.clear();
 	}
 
 	void UIPanel::SetHorizontalAlign(HorizontalAlign hAlign) {
-		this->hAlign = hAlign;
-		UpdatePanel();
+		_hAlign = hAlign;
+		updatePanel();
 	}
 
 	void UIPanel::SetVerticalAlign(VerticalAlign vAlign) {
-		this->vAlign = vAlign;
-		UpdatePanel();
+		_vAlign = vAlign;
+		updatePanel();
+	}
+
+	void UIPanel::SetDefaultHorAlign(HorizontalAlign hAlign) {
+		_defaultHorAlign = hAlign;
+	}
+
+	void UIPanel::SetDefaultVerAlign(VerticalAlign vAlign) {
+		_defaultVerAlign = vAlign;
+	}
+
+	void UIPanel::SetDefaultFont(std::string fontName, size_t fontSize) {
+		_defaultFontName = fontName;
+		_defaultFontSize = fontSize;
+	}
+
+	void UIPanel::SetDefaultColors(SDL_Color& bgColor, SDL_Color fgColor) {
+		_defaultBGColor = bgColor;
+		_defaultFGColor = fgColor;
 	}
 
 	void UIPanel::Show() {
 		UIComponent::Show();
-		for(auto& c : components) {
+		for(auto& c : _components) {
 			c->Show();
 		}
 	}
 
-	void UIPanel::UpdatePanel() {
+	void UIPanel::updatePanel() {
 		size_t totalComponentHeight = 0;
 		size_t maxComponentWidth = 0;
-		for(auto& c : components) {
+		for(auto& c : _components) {
 			SDL_Rect r = c->GetRect();
 			totalComponentHeight += r.h;
 			if(c->GetTextWidth() > maxComponentWidth)
 				maxComponentWidth = c->GetTextWidth();
 		}
-		rect.w = maxComponentWidth;
-		rect.h = totalComponentHeight;
-		switch(hAlign) {
+		_rect.w = maxComponentWidth;
+		_rect.h = totalComponentHeight;
+		switch(_hAlign) {
 			case HorizontalAlign::Center:
-				rect.x = initPos.x - (rect.w / 2);
+				_rect.x = _initPos.x - (_rect.w / 2);
 				break;
 			case HorizontalAlign::Right:
-				rect.x = initPos.x - rect.w;
+				_rect.x = _initPos.x - _rect.w;
 				break;
 			default:
-				rect.x = initPos.x;
+				_rect.x = _initPos.x;
 		}
-		switch(vAlign) {
+		switch(_vAlign) {
 			case VerticalAlign::Middle:
-				rect.y = initPos.y - (rect.h / 2);
+				_rect.y = _initPos.y - (_rect.h / 2);
 				break;
 			case VerticalAlign::Bottom:
-				rect.y = initPos.y - rect.h;
+				_rect.y = _initPos.y - _rect.h;
 				break;
 			default:
-				rect.y = initPos.y;
+				_rect.y = _initPos.y;
 		}
-		int newY = rect.y;
-		for(auto& c : components) {
-			c->SetWidth(rect.w);
-			c->SetPos(rect.x, newY);
+		int newY = _rect.y;
+		for(auto& c : _components) {
+			c->SetWidth(_rect.w);
+			c->SetPos(_rect.x, newY);
 			newY += c->GetRect().h;
 		}
 	}
 
-	void UIPanel::ItemChanged(UILabel* sender) {
-		UpdatePanel();
+	void UIPanel::itemChanged(UITextComponent* sender) {
+		updatePanel();
 	}
 
 }

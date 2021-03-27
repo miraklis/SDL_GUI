@@ -12,7 +12,7 @@ namespace SDL_GUI {
 		~UIImage();
 		void Render() override;
 	private:
-		SDL_Texture* texture;
+		SDL_Texture* _texture;
 	};
 
 }

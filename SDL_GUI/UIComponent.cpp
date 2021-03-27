@@ -2,72 +2,102 @@
 
 namespace SDL_GUI {
 
-	//UIComponent::UIComponent(SDL_Renderer* renderer, std::string name, SDL_Rect& rect) {
-	//	this->renderer = renderer;
-	//	this->name = name;
-	//	this->rect = rect;
-	//	this->visible = false;
-	//}
+	UIComponent::UIComponent(std::string name, int x, int y) 
+		: UIComponent(name, x, y, 0, 0)
+	{}
 
-	UIComponent::UIComponent(SDL_Renderer* renderer, std::string name, int x, int y, size_t w, size_t h, bool visible) {
-		this->renderer = renderer;
-		this->name = name;
-		rect.x = x;
-		rect.y = y;
-		rect.w = w;
-		rect.h = h;
-		this->visible = visible;
+	UIComponent::UIComponent(std::string name, int x, int y, size_t w, size_t h) 
+	{
+		_name = name;
+		_rect.x = x;
+		_rect.y = y;
+		_rect.w = w;
+		_rect.h = h;
+		_visible = false;
 	}
 
-	UIComponent::~UIComponent() {}
+	UIComponent::~UIComponent() 
+	{}
 
-	std::string UIComponent::GetName() {
-		return name;
+	void UIComponent::Show() 
+	{
+		_visible = true;
 	}
 
-	void UIComponent::Show() {
-		visible = true;
+	void UIComponent::Hide() 
+	{
+		_visible = false;
 	}
 
-	void UIComponent::Hide() {
-		visible = false;
-	}
-
-	bool UIComponent::IsVisible() {
-		return visible;
-	}
-
-	void UIComponent::SetPos(int x, int y) {
-		rect.x = x;
-		rect.y = y;
-	}
-
-	void UIComponent::SetX(int x) {
-		SetPos(x, rect.y);
-	}
-
-	void UIComponent::SetY(int y) {
-		SetPos(rect.x, y);
-	}
-
-	void UIComponent::SetSize(size_t w, size_t h) {
-		if(rect.w == w && rect.h == h)
+	void UIComponent::SetPos(int x, int y) 
+	{
+		if(_rect.x == x && _rect.y == y)
 			return;
-		rect.w = w;
-		rect.h = h;
-		OnSizeChanged(this);
+		_rect.x = x;
+		_rect.y = y;
 	}
 
-	void UIComponent::SetWidth(size_t w) {
-		SetSize(w, rect.h);
+	void UIComponent::SetX(int x) 
+	{
+		SetPos(x, _rect.y);
 	}
 
-	void UIComponent::SetHeight(size_t h) {
-		SetSize(rect.w, h);
+	void UIComponent::SetY(int y) 
+	{
+		SetPos(_rect.x, y);
 	}
 
-	const SDL_Rect& UIComponent::GetRect() {
-		return rect;
+	void UIComponent::SetSize(size_t w, size_t h) 
+	{
+		if(_rect.w == w && _rect.h == h)
+			return;
+		_rect.w = w;
+		_rect.h = h;
+	}
+
+	void UIComponent::SetWidth(size_t w) 
+	{
+		SetSize(w, _rect.h);
+	}
+
+	void UIComponent::SetHeight(size_t h) 
+	{
+		SetSize(_rect.w, h);
+	}
+
+	std::string UIComponent::GetName() const 
+	{
+		return _name;
+	}
+
+	bool UIComponent::IsVisible() const 
+	{
+		return _visible;
+	}
+
+	const SDL_Rect& UIComponent::GetRect() const 
+	{
+		return _rect;
+	}
+
+	int UIComponent::GetPosX() const 
+	{
+		return _rect.x;
+	}
+
+	int UIComponent::GetPosY() const 
+	{
+		return _rect.y;
+	}
+
+	size_t UIComponent::GetWidth() const 
+	{
+		return _rect.w;
+	}
+
+	size_t UIComponent::GetHeight() const 
+	{
+		return _rect.h;
 	}
 
 }

@@ -11,7 +11,7 @@ namespace SDL_GUI {
     template<typename ...Args>
     class Event final {
     private:
-        std::unordered_map<int, EventDelegate<Args...> > handlers;
+        std::unordered_map<int, EventDelegate<Args...>> handlers;
         unsigned long handlerNum{ 0 };
     public:
         int AddListener(EventDelegate<Args...> func) {
