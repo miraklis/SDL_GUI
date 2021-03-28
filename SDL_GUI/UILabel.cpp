@@ -16,18 +16,24 @@ namespace SDL_GUI {
 					 std::string fontName, size_t fontSize,
 					 SDL_Color& bgColor, SDL_Color& fgColor,
 					 HorizontalAlign hAlign, VerticalAlign vAlign)
-			:UITextComponent(name, caption, x, y, w, h, fontName, fontSize, bgColor, fgColor)
+			:UITextComponent(renderer, name, caption, x, y, w, h, fontName, fontSize, fgColor)
 	{
-		_renderer = renderer;
 		_autosize = autosize;
+		_bgColor = bgColor;
 		_hAlign = hAlign;
 		_vAlign = vAlign;
 		_txtOffsetX = _txtOffsetY = 0;
-		updateText();
 	}
 
 	UILabel::~UILabel() 
 	{}
+
+	void UILabel::SetColor(const SDL_Color& bgColor, const SDL_Color& fgColor)
+	{
+		_bgColor = bgColor;
+		_fgColor = fgColor;
+		updateText();
+	}
 
 	void UILabel::SetSize(size_t w, size_t h) {
 		if(_autosize)
@@ -109,7 +115,6 @@ namespace SDL_GUI {
 	}
 
 	void UILabel::updateText() {
-		UITextComponent::updateText();
 		if(_autosize || _rect.w == 0) {
 			_rect.w = _textRegion.w;
 		}

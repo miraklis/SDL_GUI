@@ -67,11 +67,16 @@ namespace SDL_GUI {
 		}
 	}
 
-	void UIMenu::AddItem(std::unique_ptr<UITextComponent> newItem) {
+	void UIMenu::AddItem(std::unique_ptr<UILabel> newItem) {
 		newItem->SetColor(_defaultBGColor, _defaultFGColor);
 		UIPanel::AddItem(std::move(newItem));
 		if(_components.size() == 1) // if it is the first Item
 			SelectItem(0); // select it
+	}
+
+	void UIMenu::AddItem(std::string name, std::string caption)
+	{
+		UIPanel::AddItem(name, caption);
 	}
 
 	void UIMenu::SelectItem(size_t index) {

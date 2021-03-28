@@ -28,8 +28,8 @@ namespace SDL_GUI
 		virtual size_t GetHeight() const;
 		Event<UIComponent*> OnResized;
 	protected:
-		UIComponent(std::string name, int x, int y);
-		UIComponent(std::string name, int x, int y, size_t w, size_t h);
+		UIComponent(SDL_Renderer* renderer, std::string name, int x, int y);
+		UIComponent(SDL_Renderer* renderer, std::string name, int x, int y, size_t w, size_t h);
 		SDL_Renderer* _renderer;
 		std::string _name;
 		SDL_Rect _rect;

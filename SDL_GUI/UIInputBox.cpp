@@ -14,6 +14,7 @@ namespace SDL_GUI {
 						   SDL_Color& bgColor, SDL_Color& fgColor, HorizontalAlign hTextAlign)
 		:UIPanel(renderer, name, x, y)
 	{
+		_autosize = false;
 		_focus = false;
 		_maxChar = maxChar;
 		_rect.w = (maxChar * fontSize) + fontSize;

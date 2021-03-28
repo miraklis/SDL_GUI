@@ -3,7 +3,7 @@
 
 #include "UIMain.h"
 #include "UIComponent.h"
-#include "UITextComponent.h"
+#include "UILabel.h"
 
 namespace SDL_GUI {
 
@@ -17,8 +17,8 @@ namespace SDL_GUI {
 		void Render() override;
 		void SetPos(int x, int y) override;
 		void Show() override;
-		virtual void AddItem(std::unique_ptr<UITextComponent> newItem);
-		void AddLabel(std::string name, std::string caption);
+		virtual void AddItem(std::unique_ptr<UILabel> newItem);
+		virtual void AddItem(std::string name, std::string caption);
 		void RemoveItem(std::string name);
 		void ClearItems();
 		void SetHorizontalAlign(HorizontalAlign hAlign);
@@ -26,9 +26,10 @@ namespace SDL_GUI {
 		void SetDefaultHorAlign(HorizontalAlign hAlign);
 		void SetDefaultVerAlign(VerticalAlign vAlign);
 		void SetDefaultFont(std::string fontName, size_t fontSize);
-		void SetDefaultColors(SDL_Color& bgColor, SDL_Color fgColor);
+		void SetDefaultColors(SDL_Color& bgColor, SDL_Color& fgColor);
 	protected:
-		std::vector<std::unique_ptr<UITextComponent>> _components;
+		std::vector<std::unique_ptr<UILabel>> _components;
+		bool _autosize;
 		SDL_Rect _initPos;
 		HorizontalAlign _hAlign;
 		VerticalAlign _vAlign;
@@ -39,7 +40,7 @@ namespace SDL_GUI {
 		SDL_Color _defaultBGColor;
 		SDL_Color _defaultFGColor;
 		void updatePanel();
-		void itemChanged(UITextComponent* sender);
+		void itemChanged(UILabel *sender);
 	};
 
 }

@@ -16,6 +16,7 @@ namespace SDL_GUI {
 				HorizontalAlign hAlign, VerticalAlign vAlign);
 		virtual ~UILabel() override;
 		void Render() override;
+		void SetColor(const SDL_Color& bgColor, const SDL_Color& fgColor);
 		void SetSize(size_t w, size_t h) override;
 		void SetText(std::string caption) override;
 		void SetFont(std::string fontName, size_t fontSize) override;
@@ -23,13 +24,16 @@ namespace SDL_GUI {
 		void AlignVertical(VerticalAlign vAlign);
 		void Align();
 		void SetAutosize(bool autosize);
+		Event<UILabel*> OnTextChanged;
 	protected:
 		bool _autosize;
 		int _txtOffsetX;
 		int _txtOffsetY;
+		SDL_Color _bgColor;
 		HorizontalAlign _hAlign;
 		VerticalAlign _vAlign;
-		void updateText() override;
+	private:
+		void updateText();
 	};
 
 }

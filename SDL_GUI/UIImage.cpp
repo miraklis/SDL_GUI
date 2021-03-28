@@ -3,8 +3,7 @@
 namespace SDL_GUI {
 
 	UIImage::UIImage(SDL_Renderer* renderer, std::string imgName, int x, int y) : 
-			UIComponent(imgName, 0, 0) {
-		_renderer = renderer;
+			UIComponent(renderer, imgName, 0, 0) {
 		_texture = LoadTexture(renderer, imgName);
 		_rect.x = x;
 		_rect.y = y;

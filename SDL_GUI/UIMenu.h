@@ -13,7 +13,8 @@ namespace SDL_GUI {
 		void SetDefaultColors(SDL_Color bgColor, SDL_Color fgColor, SDL_Color selBGColor, SDL_Color selFGColor);
 		std::shared_ptr<UIMenu> CreateSubMenu(std::string name);
 		void HandleEvents();
-		void AddItem(std::unique_ptr<UITextComponent> newItem) override;
+		void AddItem(std::unique_ptr<UILabel> newItem) override;
+		void AddItem(std::string name, std::string caption) override;
 		void SelectItem(size_t index);
 		void SetFocus(bool focus);
 		std::shared_ptr<UIMenu> GetParent();

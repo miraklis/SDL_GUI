@@ -2,24 +2,23 @@
 
 namespace SDL_GUI {
 
-	static SDL_Color defaultBGColor{ 0,0, 0,255 };
 	static SDL_Color defaultFGColor{ 255,255,255,255 };
 
-	UITextComponent::UITextComponent(std::string name, std::string caption)
-		:UITextComponent(name, caption, 0, 0, 0, 0,
-						 sFonts::TTF_TIMES, 16, defaultBGColor, defaultFGColor)
+	UITextComponent::UITextComponent(SDL_Renderer* renderer, std::string name, std::string caption)
+		:UITextComponent(renderer, name, caption, 0, 0, 0, 0,
+						 sFonts::TTF_TIMES, 16, defaultFGColor)
 	{}
 
-	UITextComponent::UITextComponent(std::string name, std::string caption, int x, int y, size_t w, size_t h,
-									 std::string fontName, size_t fontSize, SDL_Color& bgColor, SDL_Color& fgColor)
-		:UIComponent(name, x, y, w, h)
+	UITextComponent::UITextComponent(SDL_Renderer* renderer, std::string name, std::string caption, int x, int y, size_t w, size_t h,
+									 std::string fontName, size_t fontSize, SDL_Color& fgColor)
+		:UIComponent(renderer, name, x, y, w, h)
 	{
 		_caption = caption;
 		_font = TTF_OpenFont(fontName.c_str(), fontSize);
-		_bgColor = bgColor;
 		_fgColor = fgColor;
 		_texture = nullptr;
 		_textRegion = { 0,0,0,0 };
+		updateText();
 	}
 
 	UITextComponent::~UITextComponent()
@@ -30,16 +29,26 @@ namespace SDL_GUI {
 			SDL_DestroyTexture(_texture);
 	}
 
+	void UITextComponent::Render()
+	{
+		if(!_visible)
+			return;
+		SDL_SetRenderDrawColor(_renderer, _fgColor.r, _fgColor.g, _fgColor.b, _fgColor.a);
+		_rect.w = _textRegion.w;
+		_rect.h = _textRegion.h;
+		SDL_RenderCopy(_renderer, _texture, nullptr, &_rect);
+	}
+
 	void UITextComponent::SetText(std::string caption)
 	{
 		if(_caption == caption)
 			return;
 		_caption = caption;
+		updateText();
 	}
 
-	void UITextComponent::SetColor(const SDL_Color& bgColor, const SDL_Color& fgColor)
+	void UITextComponent::SetColor(const SDL_Color& fgColor)
 	{
-		_bgColor = bgColor;
 		_fgColor = fgColor;
 		updateText();
 	}

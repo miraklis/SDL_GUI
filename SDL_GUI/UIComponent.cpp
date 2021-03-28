@@ -2,12 +2,13 @@
 
 namespace SDL_GUI {
 
-	UIComponent::UIComponent(std::string name, int x, int y) 
-		: UIComponent(name, x, y, 0, 0)
+	UIComponent::UIComponent(SDL_Renderer* renderer, std::string name, int x, int y)
+		: UIComponent(renderer, name, x, y, 0, 0)
 	{}
 
-	UIComponent::UIComponent(std::string name, int x, int y, size_t w, size_t h) 
+	UIComponent::UIComponent(SDL_Renderer* renderer, std::string name, int x, int y, size_t w, size_t h)
 	{
+		_renderer = renderer;
 		_name = name;
 		_rect.x = x;
 		_rect.y = y;

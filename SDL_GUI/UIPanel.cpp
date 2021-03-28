@@ -5,8 +5,8 @@
 namespace SDL_GUI {
 
 	UIPanel::UIPanel(SDL_Renderer* renderer, std::string name, int x, int y) 
-			: UIComponent(name, x, y, 0, 0) {
-		_renderer = renderer;
+			: UIComponent(renderer, name, x, y, 0, 0) {
+		_autosize = true;
 		_initPos = _rect;
 		_hAlign = HorizontalAlign::Left;
 		_vAlign = VerticalAlign::Top;
@@ -53,7 +53,7 @@ namespace SDL_GUI {
 		updatePanel();
 	}
 
-	void UIPanel::AddItem(std::unique_ptr<UITextComponent> newItem) {
+	void UIPanel::AddItem(std::unique_ptr<UILabel> newItem) {
 		newItem->OnTextChanged.AddListener(std::bind(&UIPanel::itemChanged, this, std::placeholders::_1));
 		if(_visible)
 			newItem->Show();
@@ -61,7 +61,7 @@ namespace SDL_GUI {
 		updatePanel();
 	}
 
-	void UIPanel::AddLabel(std::string name, std::string caption) {
+	void UIPanel::AddItem(std::string name, std::string caption) {
 		std::unique_ptr<UILabel> item = std::make_unique<UILabel>(
 			_renderer, name, caption, 0, 0, 0, 0, false,
 			_defaultFontName, _defaultFontSize,	_defaultBGColor, _defaultFGColor, _defaultHorAlign, _defaultVerAlign);
@@ -101,7 +101,7 @@ namespace SDL_GUI {
 		_defaultFontSize = fontSize;
 	}
 
-	void UIPanel::SetDefaultColors(SDL_Color& bgColor, SDL_Color fgColor) {
+	void UIPanel::SetDefaultColors(SDL_Color& bgColor, SDL_Color& fgColor) {
 		_defaultBGColor = bgColor;
 		_defaultFGColor = fgColor;
 	}
@@ -114,16 +114,18 @@ namespace SDL_GUI {
 	}
 
 	void UIPanel::updatePanel() {
-		size_t totalComponentHeight = 0;
-		size_t maxComponentWidth = 0;
-		for(auto& c : _components) {
-			SDL_Rect r = c->GetRect();
-			totalComponentHeight += r.h;
-			if(c->GetTextWidth() > maxComponentWidth)
-				maxComponentWidth = c->GetTextWidth();
+		if(_autosize) {
+			size_t totalComponentHeight = 0;
+			size_t maxComponentWidth = 0;
+			for(auto& c : _components) {
+				SDL_Rect r = c->GetRect();
+				totalComponentHeight += r.h;
+				if(c->GetTextWidth() > maxComponentWidth)
+					maxComponentWidth = c->GetTextWidth();
+			}
+			_rect.w = maxComponentWidth;
+			_rect.h = totalComponentHeight;
 		}
-		_rect.w = maxComponentWidth;
-		_rect.h = totalComponentHeight;
 		switch(_hAlign) {
 			case HorizontalAlign::Center:
 				_rect.x = _initPos.x - (_rect.w / 2);
@@ -152,7 +154,7 @@ namespace SDL_GUI {
 		}
 	}
 
-	void UIPanel::itemChanged(UITextComponent* sender) {
+	void UIPanel::itemChanged(UILabel* sender) {
 		updatePanel();
 	}
 

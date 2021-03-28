@@ -96,6 +96,30 @@ bool menuCommand(string cmd) {
     if(cmd == "panelRemove") {
         panel->RemoveItem("lbl2");
     }
+    if(cmd == "inputHorizontalAlign") {
+        static int cnt = 0;
+        if(cnt % 3 == 0)
+            inBox->SetHorizontalAlign(SDL_GUI::HorizontalAlign::Left);
+        else if(cnt % 3 == 1)
+            inBox->SetHorizontalAlign(SDL_GUI::HorizontalAlign::Center);
+        else
+            inBox->SetHorizontalAlign(SDL_GUI::HorizontalAlign::Right);
+        cnt++;
+    }
+    if(cmd == "inputVerticalAlign") {
+        static int cnt = 0;
+        if(cnt % 3 == 0)
+            inBox->SetVerticalAlign(SDL_GUI::VerticalAlign::Top);
+        else if(cnt % 3 == 1)
+            inBox->SetVerticalAlign(SDL_GUI::VerticalAlign::Middle);
+        else
+            inBox->SetVerticalAlign(SDL_GUI::VerticalAlign::Bottom);
+        cnt++;
+    }
+    if(cmd == "edit") {
+        menu->SetFocus(false);
+        inBox->SetFocus(true);
+    }
     return true;
 }
 
@@ -108,29 +132,39 @@ int main()
     menu->SetDefaultColors(dred, white, red, white);
     menu->SetDefaultHorAlign(SDL_GUI::HorizontalAlign::Center);
     menu->SetDefaultVerAlign(SDL_GUI::VerticalAlign::Middle);
-    menu->AddLabel("panelHorizontalAlign", "Change Horizontal Align");
-    menu->AddLabel("panelVerticalAlign", "Change Vertical Align");
-    menu->AddLabel("panelChange", "Change Item");
-    menu->AddLabel("panelRemove", "Remove Item");
+    menu->AddItem("panelHorizontalAlign", "Change Horizontal Align");
+    menu->AddItem("panelVerticalAlign", "Change Vertical Align");
+    menu->AddItem("panelChange", "Change Item");
+    menu->AddItem("panelRemove", "Remove Item");
+    menu->AddItem("inputHorizontalAlign", "Change Horizontal Input");
+    menu->AddItem("inputVerticalAlign", "Change Vertical Input");
+    menu->AddItem("edit", "Edit InputBox");
+    menu->SetFocus(true);
     menu->Show();
     
+    unique_ptr<SDL_GUI::UITextComponent> simple = make_unique<SDL_GUI::UITextComponent>(renderer, "text", "Simple Text");
+    simple->SetPos(0, 200);
+    simple->Show();
+
     sX = 400;
-    sY = 20;
+    sY = 300;
     inBox = std::make_unique<SDL_GUI::UIInputBox>(renderer, "panel", "Input Message", sX, sY, 20, 
                                                   SDL_GUI::sFonts::TTF_TIMES, 24, blue, white, SDL_GUI::HorizontalAlign::Center);
     inBox->OnInputFinished.AddListener(inputfinished);
-    inBox->SetFocus(true);
+    inBox->SetFocus(false);
     inBox->Show();
     
     sX = 400;
-    sY = 300;
+    sY = 20;
     panel = std::make_unique<SDL_GUI::UIPanel>(renderer, "panel", sX, sY);
     panel->SetDefaultColors(red, white);
-    panel->AddLabel("lbl1", "This is first test");
-    panel->AddLabel("lbl2", "This is second test");
-    panel->AddLabel("lbl3", "This is third test");
+    panel->AddItem("lbl1", "This is first test");
+    panel->AddItem("lbl2", "This is second test");
+    panel->AddItem("lbl3", "This is third test");
     panel->Show();
 
+    sX = 400;
+    sY = 300;
 
     while(running) {
         menu->HandleEvents();
@@ -143,6 +177,7 @@ int main()
         menu->Render();
         panel->Render();
         inBox->Render();
+        simple->Render();
         SDL_RenderPresent(renderer);
     }
     SDL_Quit();
