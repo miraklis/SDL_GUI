@@ -23,6 +23,7 @@ namespace SDL_GUI {
 		_hAlign = hAlign;
 		_vAlign = vAlign;
 		_txtOffsetX = _txtOffsetY = 0;
+		updateText();
 	}
 
 	UILabel::~UILabel() 
@@ -32,14 +33,12 @@ namespace SDL_GUI {
 	{
 		_bgColor = bgColor;
 		_fgColor = fgColor;
-		updateText();
 	}
 
 	void UILabel::SetSize(size_t w, size_t h) {
 		if(_autosize)
 			return;
 		UITextComponent::SetSize(w, h);
-		updateText();
 		Align();
 		OnResized(this);
 	}

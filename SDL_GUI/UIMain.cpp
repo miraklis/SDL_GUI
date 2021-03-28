@@ -9,7 +9,8 @@ namespace SDL_GUI {
 	const char* sFonts::TTF_KA1 = "assets/ka1.ttf";
 
     // SDL Helper Utilities
-    SDL_Texture* LoadTexture(SDL_Renderer* renderer, std::string textureFile) {
+    SDL_Texture* LoadTexture(SDL_Renderer* renderer, std::string textureFile) 
+    {
         SDL_Surface* tmpSurface = IMG_Load(textureFile.c_str());
         if(!tmpSurface)
             return nullptr;
@@ -20,4 +21,11 @@ namespace SDL_GUI {
         return texture;
     }
 
+    bool IsColorsEqual(const SDL_Color& first, const SDL_Color& second)
+    {
+        return (first.r == second.r &&
+                first.g == second.g &&
+                first.b == second.b &&
+                first.a == second.a);
+    }
 }

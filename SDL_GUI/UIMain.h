@@ -32,7 +32,7 @@ namespace SDL_GUI {
 	};
 
 	extern SDL_Texture* LoadTexture(SDL_Renderer* renderer, std::string file);
-
+	extern bool IsColorsEqual(const SDL_Color& first, const SDL_Color& second);
 }
 
 #endif //UIMAIN_H

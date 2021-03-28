@@ -49,6 +49,8 @@ namespace SDL_GUI {
 
 	void UITextComponent::SetColor(const SDL_Color& fgColor)
 	{
+		if(IsColorsEqual(_fgColor, fgColor))
+			return;
 		_fgColor = fgColor;
 		updateText();
 	}
